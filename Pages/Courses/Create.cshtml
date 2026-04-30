@@ -1,0 +1,23 @@
+@page
+@model StudentManagerWebApp.Pages.Courses.CreateModel
+
+<h2>Create Course</h2>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Course.Title" class="form-label"></label>
+        <input asp-for="Course.Title" class="form-control" />
+        <span asp-validation-for="Course.Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Course.Hours" class="form-label"></label>
+        <input asp-for="Course.Hours" class="form-control" />
+        <span asp-validation-for="Course.Hours" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

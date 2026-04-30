@@ -1,0 +1,33 @@
+@page
+@model StudentManagerWebApp.Pages.Courses.IndexModel
+
+<h2>Courses</h2>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">Create Course</a>
+    <a asp-page="/Students/Index" class="btn btn-secondary">Back to Students</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Hours</th>
+            <th>Students</th>
+            <th>Average Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Courses)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Hours</td>
+                <td>@item.StudentCount</td>
+                <td>
+                    @(item.AverageGrade.HasValue ? item.AverageGrade.Value.ToString("0.00") : "-")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

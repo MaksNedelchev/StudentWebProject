@@ -1,0 +1,32 @@
+﻿@page "{id:int}"
+@model StudentManagerWebApp.Pages.Students.EnrollmentsModel
+@{
+}
+
+
+<h2>@Model.Student.FirstName @Model.Student.LastName Enrollments</h2>
+<a asp-page="AddEnrollment" class="btn btn-primary mb-lg-3" asp-route-id="@Model.Student.Id">Add enrollment</a>
+@* <a asp-page="Create" class="btn btn-light">Add Student</a> *@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Grade</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var enr in Model.Enrollments)
+        {
+            <tr>
+                <td>@enr.Course?.Title</td>
+                <td>@enr.Grade</td>
+                <td>
+@*                     <a asp-page="Enrollments" class="btn btn-primary">View Enrollments</a>
+                    <a asp-page="Edit" asp-route-id="@student.Id" class="btn btn-primary">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@student.Id" class="btn btn-primary">Delete</a> *@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

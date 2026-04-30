@@ -1,0 +1,19 @@
+﻿@page "{id:int}"
+@model StudentManagerWebApp.Pages.Students.DeleteModel
+@{
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Delete Student</h2>
+        <div class="alert alert-danger">
+            <h5>Are you sure?</h5>
+            <p>@Model.Student.FirstName @Model.Student.LastName</p>
+        </div>
+        <form method="post">
+            <input type="hidden" asp-for="Student.Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

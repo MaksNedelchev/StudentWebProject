@@ -1,0 +1,50 @@
+﻿@page "{id:int}"
+@model StudentManagerWebApp.Pages.Students.AddEnrollmentModel
+
+<h2>Add Enrollment for @Model.Student.FirstName @Model.Student.LastName</h2>
+
+<form method="post" asp-route-id="@Model.StudentId">
+    <input asp-for="StudentId" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <p>
+        <a asp-page="/Courses/Create">Add new course</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Course</th>
+                <th>Hours</th>
+                <th>Grade (2.00 - 6.00)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model.AllCourses)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="SelectedCoursesIds" value="@course.Id" />
+                    </td>
+                    <td>@course.Title</td>
+                    <td>@course.Hours</td>
+                    <td>
+                        <input
+                            type="number"
+                            name="Grades_@course.Id"
+                            step="0.01"
+                            min="2.00"
+                            max="6.00"
+                            class="form-control"
+                            style="width:120px" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Enroll selected courses</button>
+    <a asp-page="/Enrollments/@Model.Student.Id" class="btn btn-secondary">Go Back</a>
+</form>
