@@ -4,12 +4,13 @@ using StudentManagerWebApp.Models;
 using StudentManagerWebApp.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace StudentManagerWebApp.Pages.Students
+namespace StudentManagerWebApp.Pages.Teachers
 {
     public class CreateModel : PageModel
     {
         private readonly StudentDbContext _context;
         private readonly PasswordService _passwordService;
+
         public CreateModel(StudentDbContext context, PasswordService passwordService)
         {
             _context = context;
@@ -17,7 +18,7 @@ namespace StudentManagerWebApp.Pages.Students
         }
 
         [BindProperty]
-        public Student Student { get; set; } = new();
+        public Teacher Teacher { get; set; } = new();
 
         [BindProperty]
         [Required]
@@ -33,18 +34,17 @@ namespace StudentManagerWebApp.Pages.Students
         {
             if (!ModelState.IsValid) return Page();
 
-            var user = new AppUser
+            Teacher.AppUser = new AppUser
             {
                 Email = Email,
-                FullName = $"{Student.FirstName} {Student.LastName}",
-                Role = UserRole.Student,
+                FullName = $"{Teacher.FirstName} {Teacher.LastName}",
+                Role = UserRole.Teacher,
                 PasswordHash = _passwordService.HashPassword(Password)
             };
 
-            Student.AppUser = user;
-            _context.Students.Add(Student);
+            _context.Teachers.Add(Teacher);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+            return RedirectToPage("Index");
         }
     }
 }

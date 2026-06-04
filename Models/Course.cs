@@ -6,6 +6,9 @@ namespace StudentManagerWebApp.Models
     {
         public int Id { get; set; }
 
+        [Display(Name = "Teacher")]
+        public int? TeacherId { get; set; }
+
         [Required(ErrorMessage = "Enter course title")]
         [StringLength(50)]
         [Display(Name = "Title")]
@@ -15,7 +18,10 @@ namespace StudentManagerWebApp.Models
         [Display(Name ="Duration")]
         public int Hours { get; set; }
 
+        public Teacher? Teacher { get; set; }
         public List<Enrollment> Enrollments { get; set; } = new();
+        public List<Assignment> Assignments { get; set; } = new();
+        public List<Absence> Absences { get; set; } = new();
 
     }
 }

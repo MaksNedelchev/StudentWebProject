@@ -12,9 +12,11 @@ namespace StudentManagerWebApp.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            return User.Identity?.IsAuthenticated == true
+                ? RedirectToPage("/Dashboard")
+                : RedirectToPage("/Account/Login");
         }
     }
 }

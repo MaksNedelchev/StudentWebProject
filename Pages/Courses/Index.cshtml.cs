@@ -13,20 +13,18 @@ namespace StudentManagerWebApp.Pages.Courses
 
         public async Task OnGetAsync()
         {
-            // Use GroupJoin so the count/average are computed server-side in a single query per EF Core provider
             Courses = await _context.Courses
-                .GroupJoin(
-                    _context.Enrollments,
-                    course => course.Id,
-                    enrollment => enrollment.CourseId,
-                    (course, enrollments) => new CourseStats
-                    {
-                        Id = course.Id,
-                        Title = course.Title,
-                        Hours = course.Hours,
-                        StudentCount = enrollments.Count(),
-                        AverageGrade = enrollments.Any() ? enrollments.Average(e => (decimal?)e.Grade) : null
-                    })
+                .Select(course => new CourseStats
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Hours = course.Hours,
+                    TeacherName = course.Teacher == null ? "Unassigned" : course.Teacher.FirstName + " " + course.Teacher.LastName,
+                    StudentCount = course.Enrollments.Count,
+                    AverageGrade = course.Enrollments.Any(e => e.Grade.HasValue)
+                        ? course.Enrollments.Where(e => e.Grade.HasValue).Average(e => e.Grade)
+                        : null
+                })
                 .ToListAsync();
         }
 
@@ -35,6 +33,7 @@ namespace StudentManagerWebApp.Pages.Courses
             public int Id { get; set; }
             public string Title { get; set; } = string.Empty;
             public int Hours { get; set; }
+            public string TeacherName { get; set; } = string.Empty;
             public int StudentCount { get; set; }
             public decimal? AverageGrade { get; set; }
         }

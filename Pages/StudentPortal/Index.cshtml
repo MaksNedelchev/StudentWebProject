@@ -1,0 +1,106 @@
+@page
+@model StudentManagerWebApp.Pages.StudentPortal.IndexModel
+@{
+    ViewData["Title"] = "My courses";
+}
+
+<h1 class="h3 mb-3">My courses</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="border rounded p-3 h-100">
+            <div class="text-muted small">Enrolled courses</div>
+            <div class="fs-3">@Model.Enrollments.Count</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded p-3 h-100">
+            <div class="text-muted small">Average grade</div>
+            <div class="fs-3">@(Model.AverageGrade.HasValue ? Model.AverageGrade.Value.ToString("0.00") : "-")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="border rounded p-3 h-100">
+            <div class="text-muted small">Absences</div>
+            <div class="fs-3">@Model.AbsenceCount</div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5">Grades</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Grade</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var enrollment in Model.Enrollments)
+        {
+            <tr>
+                <td>@enrollment.Course?.Title</td>
+                <td>@enrollment.Course?.Teacher?.FirstName @enrollment.Course?.Teacher?.LastName</td>
+                <td>@(enrollment.Grade.HasValue ? enrollment.Grade.Value.ToString("0.00") : "-")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2 class="h5 mt-4">Message a teacher</h2>
+@foreach (var enrollment in Model.Enrollments.Where(e => e.Course?.Teacher != null))
+{
+    <form method="post" asp-page-handler="Message" class="border rounded p-3 mb-2">
+        <input type="hidden" name="CourseId" value="@enrollment.CourseId" />
+        <div class="fw-semibold">@enrollment.Course?.Title - @enrollment.Course?.Teacher?.FirstName @enrollment.Course?.Teacher?.LastName</div>
+        <input name="Subject" class="form-control my-2" placeholder="Subject" />
+        <textarea name="Body" class="form-control mb-2" rows="2" placeholder="Message"></textarea>
+        <button class="btn btn-outline-primary btn-sm" type="submit">Send message</button>
+    </form>
+}
+
+<h2 class="h5 mt-4">Assignments</h2>
+@foreach (var assignment in Model.Assignments)
+{
+    var submission = Model.Submissions.FirstOrDefault(s => s.AssignmentId == assignment.Id);
+    <div class="border rounded p-3 mb-3">
+        <div class="d-flex justify-content-between">
+            <strong>@assignment.Title</strong>
+            <span class="text-muted">@assignment.Course?.Title - due @assignment.DueDate.ToShortDateString()</span>
+        </div>
+        <p class="mb-2">@assignment.Description</p>
+        @if (submission?.Grade.HasValue == true)
+        {
+            <div class="alert alert-success py-2">Grade: @submission.Grade.Value.ToString("0.00") @submission.Feedback</div>
+        }
+        <form method="post" asp-page-handler="Submit">
+            <input type="hidden" name="AssignmentId" value="@assignment.Id" />
+            <textarea name="SubmissionContent" class="form-control mb-2" rows="3">@(submission?.Content ?? "")</textarea>
+            <button class="btn btn-primary btn-sm" type="submit">Submit assignment</button>
+        </form>
+    </div>
+}
+
+<h2 class="h5 mt-4">Received messages</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Message</th>
+            <th>Sent</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var message in Model.Messages)
+        {
+            <tr>
+                <td>@message.Sender?.FullName</td>
+                <td>@message.Subject</td>
+                <td>@message.Body</td>
+                <td>@message.SentAt.ToLocalTime().ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>

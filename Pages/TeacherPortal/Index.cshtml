@@ -1,0 +1,128 @@
+@page
+@model StudentManagerWebApp.Pages.TeacherPortal.IndexModel
+@{
+    ViewData["Title"] = "My teaching";
+}
+
+<h1 class="h3 mb-3">My teaching</h1>
+
+@if (!Model.Courses.Any())
+{
+    <div class="alert alert-info">No courses are assigned to you yet.</div>
+}
+else
+{
+    <form method="get" class="mb-3">
+        <label class="form-label">Course</label>
+        <select name="courseId" class="form-select" onchange="this.form.submit()">
+            @foreach (var course in Model.Courses)
+            {
+                <option value="@course.Id" selected="@(course.Id == Model.SelectedCourseId)">@course.Title</option>
+            }
+        </select>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <h2 class="h5">Students and grades</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Grade</th>
+                        <th>Absence</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var enrollment in Model.Enrollments)
+                    {
+                        <tr>
+                            <td>@enrollment.Student?.FirstName @enrollment.Student?.LastName</td>
+                            <td>
+                                <form method="post" asp-page-handler="Grade" class="d-flex gap-2">
+                                    <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
+                                    <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
+                                    <input name="Grade" class="form-control form-control-sm" type="number" step="0.01" min="2" max="6" value="@enrollment.Grade" />
+                                    <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" asp-page-handler="Absence" class="d-flex gap-2">
+                                    <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
+                                    <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
+                                    <input name="AbsenceDate" class="form-control form-control-sm" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">Add</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" asp-page-handler="Message">
+                                    <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
+                                    <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
+                                    <input name="Subject" class="form-control form-control-sm mb-1" placeholder="Subject" />
+                                    <textarea name="Body" class="form-control form-control-sm mb-1" rows="2" placeholder="Message"></textarea>
+                                    <button class="btn btn-sm btn-outline-primary" type="submit">Send</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-5">
+            <h2 class="h5">Create assignment</h2>
+            <form method="post" asp-page-handler="Assignment" class="border rounded p-3 mb-3">
+                <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
+                <div class="mb-2">
+                    <input name="AssignmentTitle" class="form-control" placeholder="Title" />
+                </div>
+                <div class="mb-2">
+                    <textarea name="AssignmentDescription" class="form-control" rows="3" placeholder="Description"></textarea>
+                </div>
+                <div class="mb-2">
+                    <input name="AssignmentDueDate" class="form-control" type="date" value="@DateTime.Today.AddDays(7).ToString("yyyy-MM-dd")" />
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+
+            <h2 class="h5">Submissions</h2>
+            @foreach (var submission in Model.Submissions)
+            {
+                <form method="post" asp-page-handler="SubmissionGrade" class="border rounded p-3 mb-2">
+                    <input type="hidden" name="SubmissionId" value="@submission.Id" />
+                    <div><strong>@submission.Assignment?.Title</strong></div>
+                    <div class="text-muted small">@submission.Student?.FirstName @submission.Student?.LastName - @submission.SubmittedAt.ToLocalTime().ToString("g")</div>
+                    <p class="mt-2">@submission.Content</p>
+                    <div class="d-flex gap-2 mb-2">
+                        <input name="Grade" class="form-control form-control-sm" type="number" step="0.01" min="2" max="6" value="@submission.Grade" />
+                        <button class="btn btn-sm btn-primary" type="submit">Grade</button>
+                    </div>
+                    <textarea name="Feedback" class="form-control form-control-sm" rows="2" placeholder="Feedback">@submission.Feedback</textarea>
+                </form>
+            }
+        </div>
+    </div>
+
+    <h2 class="h5 mt-4">Messages</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Subject</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var message in Model.Messages)
+            {
+                <tr>
+                    <td>@message.Sender?.FullName</td>
+                    <td>@message.Recipient?.FullName</td>
+                    <td>@message.Subject</td>
+                    <td>@message.Body</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

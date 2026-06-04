@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using StudentManagerWebApp.Models;
 
 namespace StudentManagerWebApp.Pages.Courses
@@ -15,15 +17,18 @@ namespace StudentManagerWebApp.Pages.Courses
         [BindProperty]
         public Course Course { get; set; } = new();
 
-        public IActionResult OnGet()
+        public List<SelectListItem> TeacherList { get; set; } = new();
+
+        public async Task OnGetAsync()
         {
-            return Page();
+            await LoadTeachersAsync();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                await LoadTeachersAsync();
                 return Page();
             }
 
@@ -31,6 +36,19 @@ namespace StudentManagerWebApp.Pages.Courses
             await _context.SaveChangesAsync();
 
             return RedirectToPage("Index");
+        }
+
+        private async Task LoadTeachersAsync()
+        {
+            TeacherList = await _context.Teachers
+                .OrderBy(t => t.LastName)
+                .ThenBy(t => t.FirstName)
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = $"{t.FirstName} {t.LastName}"
+                })
+                .ToListAsync();
         }
     }
 }

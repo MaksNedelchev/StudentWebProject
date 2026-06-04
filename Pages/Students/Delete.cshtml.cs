@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using StudentManagerWebApp.Models;
 
 namespace StudentManagerWebApp.Pages.Students
@@ -17,17 +18,24 @@ namespace StudentManagerWebApp.Pages.Students
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var student = await _context.Students.FindAsync(id);
+            var student = await _context.Students.Include(s => s.AppUser).FirstOrDefaultAsync(s => s.Id == id);
             if (student == null) return NotFound();
             Student = student;
             return Page();
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var student = await _context.Students.FindAsync(Student.Id);
+            var student = await _context.Students.Include(s => s.AppUser).FirstOrDefaultAsync(s => s.Id == Student.Id);
             if (student != null)
             {
-                _context.Students.Remove(student);
+                if (student.AppUser != null)
+                {
+                    _context.AppUsers.Remove(student.AppUser);
+                }
+                else
+                {
+                    _context.Students.Remove(student);
+                }
                 await _context.SaveChangesAsync();
             }
             return RedirectToPage("Index");

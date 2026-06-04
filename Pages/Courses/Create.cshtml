@@ -13,6 +13,14 @@
     </div>
 
     <div class="mb-3">
+        <label asp-for="Course.TeacherId" class="form-label"></label>
+        <select asp-for="Course.TeacherId" asp-items="Model.TeacherList" class="form-select">
+            <option value="">Unassigned</option>
+        </select>
+        <span asp-validation-for="Course.TeacherId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
         <label asp-for="Course.Hours" class="form-label"></label>
         <input asp-for="Course.Hours" class="form-control" />
         <span asp-validation-for="Course.Hours" class="text-danger"></span>

@@ -13,6 +13,7 @@
         <tr>
             <th>Title</th>
             <th>Hours</th>
+            <th>Teacher</th>
             <th>Students</th>
             <th>Average Grade</th>
         </tr>
@@ -23,6 +24,7 @@
             <tr>
                 <td>@item.Title</td>
                 <td>@item.Hours</td>
+                <td>@item.TeacherName</td>
                 <td>@item.StudentCount</td>
                 <td>
                     @(item.AverageGrade.HasValue ? item.AverageGrade.Value.ToString("0.00") : "-")

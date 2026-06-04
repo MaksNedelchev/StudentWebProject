@@ -1,0 +1,32 @@
+@page "{id:int}"
+@model StudentManagerWebApp.Pages.Teachers.EditModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Edit teacher</h2>
+        <form method="post">
+            <input type="hidden" asp-for="Teacher.Id" />
+            <input type="hidden" asp-for="Teacher.AppUserId" />
+            <div class="mb-3">
+                <label asp-for="Teacher.FirstName" class="form-label"></label>
+                <input asp-for="Teacher.FirstName" class="form-control" />
+                <span asp-validation-for="Teacher.FirstName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Teacher.LastName" class="form-label"></label>
+                <input asp-for="Teacher.LastName" class="form-control" />
+                <span asp-validation-for="Teacher.LastName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" type="email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Teacher.Department" class="form-label"></label>
+                <input asp-for="Teacher.Department" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-warning">Save</button>
+            <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

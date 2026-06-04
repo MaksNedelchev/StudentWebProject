@@ -6,6 +6,8 @@ namespace StudentManagerWebApp.Models
     {
         public int Id { get; set; }
 
+        public int? AppUserId { get; set; }
+
         [Required(ErrorMessage = "Enter student's first name")]
         [StringLength(50)]
         [Display(Name = "First name")]
@@ -20,6 +22,9 @@ namespace StudentManagerWebApp.Models
         [Display(Name = "Enrollment Date")]
         public DateOnly EnrollmentDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
+        public AppUser? AppUser { get; set; }
         public List<Enrollment> Enrollments { get; set; } = new();
+        public List<AssignmentSubmission> AssignmentSubmissions { get; set; } = new();
+        public List<Absence> Absences { get; set; } = new();
     }
 }

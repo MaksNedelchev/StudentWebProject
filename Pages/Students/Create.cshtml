@@ -18,6 +18,16 @@
                 <span asp-validation-for="Student.LastName" class="alert text-danger"></span>
             </div>
             <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" type="email" class="form-control" />
+                <span asp-validation-for="Email" class="alert text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="alert text-danger"></span>
+            </div>
+            <div class="mb-3">
                 <label asp-for="Student.EnrollmentDate" class="form-label"></label>
                 <input asp-for="Student.EnrollmentDate" min="2018-01-01" class="form-control" />
                 <span asp-validation-for="Student.EnrollmentDate" class="alert text-danger"></span>

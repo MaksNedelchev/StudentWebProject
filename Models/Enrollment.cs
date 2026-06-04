@@ -10,7 +10,7 @@ namespace StudentManagerWebApp.Models
         public int CourseId { get; set; }
 
         [Range(2.00, 6.00)]
-        public decimal Grade { get; set; }
+        public decimal? Grade { get; set; }
 
         public Course? Course { get; set; }
         public Student? Student { get; set; }

@@ -1,0 +1,18 @@
+@page
+@model StudentManagerWebApp.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Admin dashboard";
+}
+
+<h1 class="h3 mb-3">Admin dashboard</h1>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a class="btn btn-outline-primary w-100 text-start p-3" asp-page="/Students/Index">Manage students</a>
+    </div>
+    <div class="col-md-4">
+        <a class="btn btn-outline-primary w-100 text-start p-3" asp-page="/Teachers/Index">Manage teachers</a>
+    </div>
+    <div class="col-md-4">
+        <a class="btn btn-outline-primary w-100 text-start p-3" asp-page="/Courses/Index">Manage courses</a>
+    </div>
+</div>
