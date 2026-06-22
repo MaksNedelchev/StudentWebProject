@@ -6,6 +6,11 @@
 
 <h1 class="h3 mb-3">My teaching</h1>
 
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a class="btn btn-outline-primary btn-sm" asp-page="/TeacherPortal/Attendance" asp-route-courseId="@Model.SelectedCourseId">Open attendance and grades</a>
+    <a class="btn btn-outline-primary btn-sm" asp-page="/TeacherPortal/Messages">Open messages</a>
+</div>
+
 @if (!Model.Courses.Any())
 {
     <div class="alert alert-info">No courses are assigned to you yet.</div>
@@ -30,8 +35,6 @@ else
                     <tr>
                         <th>Student</th>
                         <th>Grade</th>
-                        <th>Absence</th>
-                        <th>Message</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,23 +48,6 @@ else
                                     <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
                                     <input name="Grade" class="form-control form-control-sm" type="number" step="0.01" min="2" max="6" value="@enrollment.Grade" />
                                     <button class="btn btn-sm btn-primary" type="submit">Save</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form method="post" asp-page-handler="Absence" class="d-flex gap-2">
-                                    <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
-                                    <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
-                                    <input name="AbsenceDate" class="form-control form-control-sm" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                    <button class="btn btn-sm btn-outline-secondary" type="submit">Add</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form method="post" asp-page-handler="Message">
-                                    <input type="hidden" name="CourseId" value="@Model.SelectedCourseId" />
-                                    <input type="hidden" name="StudentId" value="@enrollment.StudentId" />
-                                    <input name="Subject" class="form-control form-control-sm mb-1" placeholder="Subject" />
-                                    <textarea name="Body" class="form-control form-control-sm mb-1" rows="2" placeholder="Message"></textarea>
-                                    <button class="btn btn-sm btn-outline-primary" type="submit">Send</button>
                                 </form>
                             </td>
                         </tr>
@@ -102,27 +88,4 @@ else
             }
         </div>
     </div>
-
-    <h2 class="h5 mt-4">Messages</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Subject</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var message in Model.Messages)
-            {
-                <tr>
-                    <td>@message.Sender?.FullName</td>
-                    <td>@message.Recipient?.FullName</td>
-                    <td>@message.Subject</td>
-                    <td>@message.Body</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 }

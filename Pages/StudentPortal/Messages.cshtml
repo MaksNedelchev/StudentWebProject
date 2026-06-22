@@ -1,0 +1,74 @@
+@page
+@model StudentManagerWebApp.Pages.StudentPortal.MessagesModel
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<h1 class="h3 mb-3">Messages</h1>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <h2 class="h5">Message a teacher</h2>
+        @if (!Model.Enrollments.Any(e => e.Course?.Teacher != null))
+        {
+            <div class="alert alert-info">You do not have any teachers to message yet.</div>
+        }
+        else
+        {
+            <form method="post" class="border rounded p-3">
+                <div class="mb-2">
+                    <label class="form-label" asp-for="CourseId">Course</label>
+                    <select class="form-select" asp-for="CourseId">
+                        @foreach (var enrollment in Model.Enrollments.Where(e => e.Course?.Teacher != null))
+                        {
+                            <option value="@enrollment.CourseId">@enrollment.Course?.Title - @enrollment.Course?.Teacher?.FirstName @enrollment.Course?.Teacher?.LastName</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" asp-for="Subject">Subject</label>
+                    <input class="form-control" asp-for="Subject" />
+                    <span class="text-danger" asp-validation-for="Subject"></span>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" asp-for="Body">Message</label>
+                    <textarea class="form-control" asp-for="Body" rows="5"></textarea>
+                    <span class="text-danger" asp-validation-for="Body"></span>
+                </div>
+                <button class="btn btn-primary" type="submit">Send message</button>
+            </form>
+        }
+    </div>
+    <div class="col-lg-7">
+        <h2 class="h5">Inbox and sent</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Direction</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Sent</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model.Messages)
+                {
+                    <tr>
+                        <td>@(message.RecipientUserId == Model.CurrentUserId ? "Inbox" : "Sent")</td>
+                        <td>@message.Sender?.FullName</td>
+                        <td>@message.Recipient?.FullName</td>
+                        <td>@message.Subject</td>
+                        <td>@message.Body</td>
+                        <td>@message.SentAt.ToLocalTime().ToString("g")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

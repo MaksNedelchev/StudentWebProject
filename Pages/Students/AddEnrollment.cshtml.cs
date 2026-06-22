@@ -33,12 +33,7 @@ namespace StudentManagerWebApp.Pages.Students
             Student = student;
             StudentId = id;
 
-            // Value should be course id so we can bind selected ids
-            CoursesList = await _context.Courses
-                .Select(c => new SelectListItem { Text = c.Title, Value = c.Id.ToString() })
-                .ToListAsync();
-
-            AllCourses = await _context.Courses.ToListAsync();
+            await LoadCoursesAsync(id);
 
             return Page();
         }
@@ -48,10 +43,7 @@ namespace StudentManagerWebApp.Pages.Students
             var student = await _context.Students.FindAsync(StudentId);
             if (student == null) return NotFound();
             Student = student;
-            CoursesList = await _context.Courses
-                .Select(c => new SelectListItem { Text = c.Title, Value = c.Id.ToString() })
-                .ToListAsync();
-            AllCourses = await _context.Courses.ToListAsync();
+            await LoadCoursesAsync(StudentId);
 
             if (!ModelState.IsValid)
             {
@@ -64,38 +56,39 @@ namespace StudentManagerWebApp.Pages.Students
                 return Page();
             }
 
-            var enrollmentsToAdd = new List<Enrollment>();
-
-            foreach (var courseId in SelectedCoursesIds)
+            var availableCourseIds = AllCourses.Select(c => c.Id).ToHashSet();
+            if (SelectedCoursesIds.Any(courseId => !availableCourseIds.Contains(courseId)))
             {
-                var formKey = $"Grades_{courseId}";
-                var gradeValue = Request.Form[formKey].ToString();
-
-                if (string.IsNullOrWhiteSpace(gradeValue)
-                    || (!decimal.TryParse(gradeValue, out var grade)
-                        && !decimal.TryParse(gradeValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out grade)))
-                {
-                    ModelState.AddModelError(string.Empty, $"Invalid grade for course id {courseId}.");
-                    return Page();
-                }
-                if (grade < 2.00m || grade > 6.00m)
-                {
-                    ModelState.AddModelError(string.Empty, $"Grade for course id {courseId} must be between 2.00 and 6.00.");
-                    return Page();
-                }
-
-                enrollmentsToAdd.Add(new Enrollment
-                {
-                    StudentId = StudentId,
-                    CourseId = courseId,
-                    Grade = grade
-                });
+                return Forbid();
             }
+
+            var enrollmentsToAdd = SelectedCoursesIds.Select(courseId => new Enrollment
+            {
+                StudentId = StudentId,
+                CourseId = courseId
+            }).ToList();
 
             _context.Enrollments.AddRange(enrollmentsToAdd);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/Students/Enrollments", new { id = StudentId });
+        }
+
+        private async Task LoadCoursesAsync(int studentId)
+        {
+            var enrolledCourseIds = await _context.Enrollments
+                .Where(e => e.StudentId == studentId)
+                .Select(e => e.CourseId)
+                .ToListAsync();
+
+            AllCourses = await _context.Courses
+                .Where(c => !enrolledCourseIds.Contains(c.Id))
+                .OrderBy(c => c.Title)
+                .ToListAsync();
+
+            CoursesList = AllCourses
+                .Select(c => new SelectListItem { Text = c.Title, Value = c.Id.ToString() })
+                .ToList();
         }
     }
 }

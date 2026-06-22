@@ -1,0 +1,76 @@
+@page
+@model StudentManagerWebApp.Pages.TeacherPortal.AttendanceModel
+@{
+    ViewData["Title"] = "Attendance and grades";
+}
+
+<h1 class="h3 mb-3">Attendance and grades</h1>
+
+@if (!Model.Courses.Any())
+{
+    <div class="alert alert-info">No courses are assigned to you yet.</div>
+}
+else
+{
+    <form method="get" class="row g-3 align-items-end mb-3">
+        <div class="col-md-5">
+            <label class="form-label" asp-for="SelectedCourseId">Subject</label>
+            <select class="form-select" asp-for="SelectedCourseId" name="courseId">
+                @foreach (var course in Model.Courses)
+                {
+                    <option value="@course.Id">@course.Title</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" asp-for="SelectedDate">Date</label>
+            <input class="form-control" asp-for="SelectedDate" name="date" type="date" />
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-primary w-100" type="submit">Show students</button>
+        </div>
+    </form>
+
+    @if (!Model.Enrollments.Any())
+    {
+        <div class="alert alert-info">No students are enrolled in this subject.</div>
+    }
+    else
+    {
+        <form method="post">
+            <input type="hidden" asp-for="SelectedCourseId" />
+            <input type="hidden" asp-for="SelectedDate" />
+
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th class="text-center">Absent</th>
+                        <th style="width: 180px;">Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Enrollments.Count; i++)
+                    {
+                        var enrollment = Model.Enrollments[i];
+                        var isAbsent = Model.AbsentStudentIds.Contains(enrollment.StudentId);
+                        <tr>
+                            <td>
+                                @enrollment.Student?.FirstName @enrollment.Student?.LastName
+                                <input type="hidden" name="Grades[@i].StudentId" value="@enrollment.StudentId" />
+                            </td>
+                            <td class="text-center">
+                                <input class="form-check-input" type="checkbox" name="PostedAbsentStudentIds" value="@enrollment.StudentId" checked="@isAbsent" />
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" name="Grades[@i].Grade" type="number" step="0.01" min="2" max="6" value="@enrollment.Grade" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button class="btn btn-primary" type="submit">Save attendance and grades</button>
+        </form>
+    }
+}

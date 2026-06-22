@@ -4,13 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Student Manager</title>
+    <script>
+        (function () {
+            var theme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentManagerWebApp.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light app-navbar border-bottom mb-4">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">Student Manager</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -20,34 +26,44 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Dashboard">Dashboard</a>
+                            <a class="nav-link" asp-area="" asp-page="/Dashboard">Dashboard</a>
                         </li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Students/Index">Students</a>
+                                <a class="nav-link" asp-area="" asp-page="/Students/Index">Students</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Teachers/Index">Teachers</a>
+                                <a class="nav-link" asp-area="" asp-page="/Teachers/Index">Teachers</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Courses/Index">Courses</a>
+                                <a class="nav-link" asp-area="" asp-page="/Courses/Index">Courses</a>
                             </li>
                         }
                         @if (User.IsInRole("Student"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/StudentPortal/Index">My courses</a>
+                                <a class="nav-link" asp-area="" asp-page="/StudentPortal/Index">My courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/StudentPortal/Messages">Messages</a>
                             </li>
                         }
                         @if (User.IsInRole("Teacher"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/TeacherPortal/Index">My teaching</a>
+                                <a class="nav-link" asp-area="" asp-page="/TeacherPortal/Index">My teaching</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/TeacherPortal/Attendance">Attendance and grades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/TeacherPortal/Messages">Messages</a>
                             </li>
                         }
                     </ul>
                     <div class="d-flex align-items-center gap-2">
+                        <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Toggle dark mode">Dark mode</button>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <span class="text-muted small">@User.Identity.Name</span>
@@ -64,13 +80,13 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container app-page">
+        <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer">
         <div class="container">
             &copy; 2026 - StudentManagerWebApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>

@@ -6,6 +6,10 @@
 
 <h1 class="h3 mb-3">My courses</h1>
 
+<div class="mb-3">
+    <a class="btn btn-outline-primary btn-sm" asp-page="/StudentPortal/Messages">Open messages</a>
+</div>
+
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="border rounded p-3 h-100">
@@ -48,18 +52,6 @@
     </tbody>
 </table>
 
-<h2 class="h5 mt-4">Message a teacher</h2>
-@foreach (var enrollment in Model.Enrollments.Where(e => e.Course?.Teacher != null))
-{
-    <form method="post" asp-page-handler="Message" class="border rounded p-3 mb-2">
-        <input type="hidden" name="CourseId" value="@enrollment.CourseId" />
-        <div class="fw-semibold">@enrollment.Course?.Title - @enrollment.Course?.Teacher?.FirstName @enrollment.Course?.Teacher?.LastName</div>
-        <input name="Subject" class="form-control my-2" placeholder="Subject" />
-        <textarea name="Body" class="form-control mb-2" rows="2" placeholder="Message"></textarea>
-        <button class="btn btn-outline-primary btn-sm" type="submit">Send message</button>
-    </form>
-}
-
 <h2 class="h5 mt-4">Assignments</h2>
 @foreach (var assignment in Model.Assignments)
 {
@@ -81,26 +73,3 @@
         </form>
     </div>
 }
-
-<h2 class="h5 mt-4">Received messages</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>From</th>
-            <th>Subject</th>
-            <th>Message</th>
-            <th>Sent</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var message in Model.Messages)
-        {
-            <tr>
-                <td>@message.Sender?.FullName</td>
-                <td>@message.Subject</td>
-                <td>@message.Body</td>
-                <td>@message.SentAt.ToLocalTime().ToString("g")</td>
-            </tr>
-        }
-    </tbody>
-</table>

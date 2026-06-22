@@ -19,7 +19,6 @@ namespace StudentManagerWebApp.Pages.TeacherPortal
         public List<Enrollment> Enrollments { get; set; } = new();
         public List<Assignment> Assignments { get; set; } = new();
         public List<AssignmentSubmission> Submissions { get; set; } = new();
-        public List<Message> Messages { get; set; } = new();
 
         [BindProperty]
         public int CourseId { get; set; }
@@ -40,22 +39,10 @@ namespace StudentManagerWebApp.Pages.TeacherPortal
         public decimal? Grade { get; set; }
 
         [BindProperty]
-        public DateOnly AbsenceDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
-
-        [BindProperty]
-        public string AbsenceNotes { get; set; } = string.Empty;
-
-        [BindProperty]
         public int SubmissionId { get; set; }
 
         [BindProperty]
         public string Feedback { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Subject { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Body { get; set; } = string.Empty;
 
         public async Task<IActionResult> OnGetAsync(int? courseId)
         {
@@ -96,26 +83,6 @@ namespace StudentManagerWebApp.Pages.TeacherPortal
             return RedirectToPage(new { courseId = CourseId });
         }
 
-        public async Task<IActionResult> OnPostAbsenceAsync()
-        {
-            var teacher = await GetCurrentTeacherAsync();
-            if (teacher == null) return NotFound();
-            if (!await OwnsCourseAsync(teacher.Id, CourseId)) return Forbid();
-
-            var enrolled = await _context.Enrollments.AnyAsync(e => e.CourseId == CourseId && e.StudentId == StudentId);
-            if (!enrolled) return Forbid();
-
-            _context.Absences.Add(new Absence
-            {
-                CourseId = CourseId,
-                StudentId = StudentId,
-                Date = AbsenceDate,
-                Notes = AbsenceNotes
-            });
-            await _context.SaveChangesAsync();
-            return RedirectToPage(new { courseId = CourseId });
-        }
-
         public async Task<IActionResult> OnPostSubmissionGradeAsync()
         {
             var teacher = await GetCurrentTeacherAsync();
@@ -131,29 +98,6 @@ namespace StudentManagerWebApp.Pages.TeacherPortal
             submission.Feedback = Feedback;
             await _context.SaveChangesAsync();
             return RedirectToPage(new { courseId = submission.Assignment.CourseId });
-        }
-
-        public async Task<IActionResult> OnPostMessageAsync()
-        {
-            var teacher = await GetCurrentTeacherAsync();
-            if (teacher == null) return NotFound();
-            if (!await OwnsCourseAsync(teacher.Id, CourseId)) return Forbid();
-
-            var student = await _context.Students.Include(s => s.AppUser).FirstOrDefaultAsync(s => s.Id == StudentId);
-            if (student?.AppUser == null) return NotFound();
-
-            var enrolled = await _context.Enrollments.AnyAsync(e => e.CourseId == CourseId && e.StudentId == StudentId);
-            if (!enrolled) return Forbid();
-
-            _context.Messages.Add(new Message
-            {
-                SenderUserId = teacher.AppUserId,
-                RecipientUserId = student.AppUser.Id,
-                Subject = Subject,
-                Body = Body
-            });
-            await _context.SaveChangesAsync();
-            return RedirectToPage(new { courseId = CourseId });
         }
 
         private async Task<Teacher?> GetCurrentTeacherAsync()
@@ -197,13 +141,6 @@ namespace StudentManagerWebApp.Pages.TeacherPortal
                 .OrderByDescending(s => s.SubmittedAt)
                 .ToListAsync();
 
-            Messages = await _context.Messages
-                .Where(m => m.RecipientUserId == teacher.AppUserId || m.SenderUserId == teacher.AppUserId)
-                .Include(m => m.Sender)
-                .Include(m => m.Recipient)
-                .OrderByDescending(m => m.SentAt)
-                .Take(30)
-                .ToListAsync();
         }
     }
 }
